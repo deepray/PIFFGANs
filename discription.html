@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+img {
+  border: 5px solid #555;
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<title>PDE constrained WGANs with Fourier Feature enhancements</title>
+</head>
+<body>
+
+<h1>PDE constrained WGANs with Fourier Feature enhancements</h1>
+
+<font size="+2">
+Consider a parametrized two-dimensional PDE of the form
+
+$$ 
+\begin{array}{rl}
+L(u,\boldsymbol{x};\boldsymbol{\mu}, \boldsymbol{\omega}) & = 0, \quad \boldsymbol{x} \in \Omega  \subset \mathbb{R}^2 \\
+B(u,\boldsymbol{x};\boldsymbol{\mu}, \boldsymbol{\omega}) &=  0 , \quad x \in \partial{\Omega}
+\end{array} 
+$$
+
+where $\boldsymbol{\mu}$ are PDE model parameters such as velocity, viscosity coefficient, etc, while $\boldsymbol{\omega}$ are random parameters modeling the underlying stochasticity.
+
+<br>
+<br>
+
+We train a WGAN to predict the stochastic solutions of the PDE. Let $\boldsymbol{z} \in \mathbb{R}^d$ be the latent variable of the WGAN sampled from a distribution $p_Z$. Then the generator gives a point-wise estimate of the solution approximation
+$$
+G : (\boldsymbol{x},\boldsymbol{z}) \in \Omega \times \mathbb{R}^{d}  \mapsto \mathbb{R}.
+$$
+The discriminator is shown the generated value at the $N_{x_1} \times N_{x_2}$ nodes in $\Omega$ 
+$$
+D : \mathbb{R}^{N_{x_1} \times N_{x_2}}  \mapsto \mathbb{R}.
+$$
+A training set sampling the true solution $u \sim p_{U}$ evaluated at these $N_{x_1} \times N_{x_2}$ nodes is generated using the analytical solution expression or a numerical solver. The loss term for the WGAN is as follows
+$$
+\mathcal{L}(D,G) = \underset{u \sim p_{U}}{\mathbb{E}}[D(u)] - \underset{\boldsymbol{z} \sim p_{Z}}{\mathbb{E}}[D(\{G(\boldsymbol{x}_{i,j},\boldsymbol{z})\}_{i,j})] + \lambda_{GP} \underset{\hat{u} \sim \hat{p}_{U}}{\mathbb{E}}[(\|\nabla_{\hat{u}}D(\hat{u}))\|^2] + \sum_{k=1}^K \lambda_k \underset{\boldsymbol{z} \sim p_{Z}\\\boldsymbol{x} \sim \mathcal{U}(\Omega)}{\mathbb{E}}[(|\mathcal{R}_k(G(\boldsymbol{x},\boldsymbol{z})))|^2]
+$$
+where $\mathcal{R}_k$ are the PDE residuals.
+
+<br>
+<br>
+
+We consider two types of generator models:
+<ul> 
+  <li> <b>Classical MLP</b></li>
+  <li> <b>MLP with a Fourier Feature input vector:</b> The input $\boldsymbol{x}$ is tranformed as
+    $$
+    \boldsymbol{x} \rightarrow \begin{bmatrix} \cos(2 \pi \boldsymbol{B} \boldsymbol{x}) \\ \sin(2 \pi \boldsymbol{B} \boldsymbol{x}) \end{bmatrix} \in \mathbb{R}^{2m}
+    $$
+    where $\boldsymbol{B} \in \mathbb{R}^{m \times 2}$ is a "fixed" random matrix whose components are samples from $\mathcal{N}(0,\sigma)$.
+  </li>
+</ul>
+
+<br>
+<br>
+
+We consider two types of discriminator models:
+<ul> 
+  <li> <b>MLP:</b> The $N_{x_1} \times N_{x_2}$ nodal values from the generator are flattened and fed to an MLP</li>
+  <li> <b>CNN:</b> The $N_{x_1} \times N_{x_2}$ nodal values from the generator are treated as an image and fed to a CNN layer.</li>
+</ul>
+
+<br>
+<br>
+
+	
+
+</body>
+</html>

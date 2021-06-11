@@ -1,0 +1,4 @@
+
+Train/exps
+Data/Burgers/*/*.npy
+Data/LinAdv/*/*.npy
