@@ -64,4 +64,12 @@ def burgers_constraints(model,z_dim,pde_params,X_range,N):
     d2x = g1.gradient(dx,x_) 
     pde_pen = tf.reduce_mean(tf.square(dt + df - visc*d2x))
     del g1, g2
-    return [pde_pen]
+
+    # Periodic boundary penalty
+    tx_l     = tf.concat((t_,X_range[0]*tf.ones([N,1])),axis=1)
+    tx_r     = tf.concat((t_,X_range[1]*tf.ones([N,1])),axis=1)
+    output_l = model([tx_l,z_],training=True)
+    output_r = model([tx_r,z_],training=True)
+    bnd_pen  = tf.reduce_mean(tf.square(output_l - output_r))
+    
+    return [pde_pen, bnd_pen]

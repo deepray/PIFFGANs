@@ -49,7 +49,7 @@ def param_check(PARAMS):
     if PARAMS.g_type == 'Standard':
         print(f'--- Ignorning FF_len and FF_sigma since g_type == Standard')
     else:
-        assert FF_len > 0 , 'FF_len must be a postive integer'    
-        assert FF_sigma > 0.0 , 'FF_sigma must be a postive real number'       
+        assert PARAMS.FF_len > 0 , 'FF_len must be a postive integer'    
+        assert PARAMS.FF_sigma > 0.0 , 'FF_sigma must be a postive real number'       
 
 
